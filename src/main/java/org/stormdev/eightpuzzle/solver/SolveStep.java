@@ -1,10 +1,10 @@
 package org.stormdev.eightpuzzle.solver;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.stormdev.eightpuzzle.board.BoardState;
 import org.stormdev.eightpuzzle.board.Direction;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SolveStep implements Comparable<SolveStep> {
 	private List<SolveStep> previous = new ArrayList<>();
@@ -55,12 +55,10 @@ public class SolveStep implements Comparable<SolveStep> {
 			}
 			BoardState newState = getBoardState().stateIfMove(d);
 			boolean alreadyHadThisStep = false;
-			for(SolveStep prev:getPreviousSteps()){
+			innerLoop: for(SolveStep prev:getPreviousSteps()){
 				if(prev.getBoardState().isEqualTo(newState)){
-					prev.getBoardState().printOut();
-					newState.printOut();
 					alreadyHadThisStep = true;
-					break;
+					break innerLoop;
 				}
 			}
 			if(!alreadyHadThisStep){

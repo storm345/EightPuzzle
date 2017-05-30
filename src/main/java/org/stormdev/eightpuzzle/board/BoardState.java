@@ -1,10 +1,10 @@
 package org.stormdev.eightpuzzle.board;
 
+import org.stormdev.eightpuzzle.solver.SolveStep;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import org.stormdev.eightpuzzle.solver.SolveStep;
 
 public class BoardState implements Cloneable {
 	private Integer[][] grid = new Integer[3][3]; //[Rows][Columns]
@@ -40,7 +40,7 @@ public class BoardState implements Cloneable {
 	
 	public void shuffle(){
 		List<Direction> steps = new ArrayList<>();
-		for(int i=0;i<30;i++){
+		for(int i=0;i<50;i++){
 			Direction d = Direction.random();
 			if(move(d)){
 				steps.add(d);
@@ -161,7 +161,12 @@ public class BoardState implements Cloneable {
 	}
 	
 	public boolean isEqualTo(BoardState other){
-		return this.grid.equals(other.grid);
+	    for(int index=0;index<9;index++){
+	        if((int)this.getValue(index) != (int)other.getValue(index)){
+                return false;
+            }
+        }
+        return true;
 	}
 	
 	public List<BoardState> getAllOtherMoves(){
@@ -176,23 +181,25 @@ public class BoardState implements Cloneable {
 		return res;
 	}
 	
-	private List<SolveStep> closedStates = new ArrayList<SolveStep>();
+	private List<SolveStep> possibleStates = new ArrayList<SolveStep>();
 	public List<Direction> movesToSolve(){
 		SolveStep self = new SolveStep(this);
-		closedStates.add(self);
+		possibleStates.add(self);
 		
 		boolean solved = this.isComplete();
 		SolveStep solution = self;
-		while(!solved && !closedStates.isEmpty()){
-			Collections.sort(closedStates);
-			SolveStep next = closedStates.get(0);
-			closedStates.remove(next);
+		while(!solved && !possibleStates.isEmpty()){
+			Collections.sort(possibleStates);
+			SolveStep next = possibleStates.remove(0);
+			if(next == null){
+				break;
+			}
 			if(next.getBoardState().isComplete()){
 				solved = true;
 				solution = next;
 				break;
 			}
-			closedStates.addAll(next.getNextSteps());
+			possibleStates.addAll(next.getNextSteps());
 		}
 		
 		if(!solved){
