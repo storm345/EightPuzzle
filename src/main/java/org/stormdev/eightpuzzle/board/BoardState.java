@@ -189,11 +189,16 @@ public class BoardState implements Cloneable {
 		boolean solved = this.isComplete();
 		SolveStep solution = self;
 		while(!solved && !possibleStates.isEmpty()){
-			Collections.sort(possibleStates);
-			SolveStep next = possibleStates.remove(0);
+			SolveStep next = null;
+			for(SolveStep ss:possibleStates){ //Set next equal to solve step with lowest heuristic value
+				if(next == null || ss.compareTo(next)< 0){
+					next = ss;
+				}
+			}
 			if(next == null){
 				break;
 			}
+			possibleStates.remove(next);
 			if(next.getBoardState().isComplete()){
 				solved = true;
 				solution = next;
